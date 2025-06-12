@@ -12,18 +12,22 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Person } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface PeopleManagerProps {
   people: Person[];
   onAddPerson: (name: string) => void;
   onRemovePerson: (personId: string) => void;
+  onVoiceInput?: () => void;
 }
 
 const PeopleManager: React.FC<PeopleManagerProps> = ({
   people,
   onAddPerson,
   onRemovePerson,
+  onVoiceInput,
 }) => {
+  const { colors } = useTheme();
   const [newPersonName, setNewPersonName] = useState('');
 
   const handleAddPerson = () => {
@@ -84,6 +88,14 @@ const PeopleManager: React.FC<PeopleManagerProps> = ({
             color={newPersonName.trim() ? '#FFFFFF' : '#8E8E93'}
           />
         </TouchableOpacity>
+        {onVoiceInput && (
+          <TouchableOpacity
+            onPress={onVoiceInput}
+            style={[styles.addButton, { marginLeft: 8, backgroundColor: '#FF9500' }]}
+          >
+            <Ionicons name="mic" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+        )}
       </View>
 
       {people.length > 0 && (

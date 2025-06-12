@@ -22,6 +22,9 @@ interface ItemsManagerProps {
   onAddItem: (item: Omit<Item, 'id'>) => void;
   onUpdateItem: (itemId: string, updates: Partial<Item>) => void;
   onRemoveItem: (itemId: string) => void;
+  onCustomSplit?: (item: Item) => void;
+  onVoiceInput?: () => void;
+  onBarcodeScanner?: () => void;
 }
 
 const ItemsManager: React.FC<ItemsManagerProps> = ({
@@ -31,6 +34,9 @@ const ItemsManager: React.FC<ItemsManagerProps> = ({
   onAddItem,
   onUpdateItem,
   onRemoveItem,
+  onCustomSplit,
+  onVoiceInput,
+  onBarcodeScanner,
 }) => {
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [newItemName, setNewItemName] = useState('');
@@ -91,12 +97,22 @@ const ItemsManager: React.FC<ItemsManagerProps> = ({
             <Text style={styles.itemName}>{item.name}</Text>
             <Text style={styles.itemPrice}>{formatCurrency(item.price, item.currency)}</Text>
           </View>
-          <TouchableOpacity
-            onPress={() => onRemoveItem(item.id)}
-            style={styles.removeButton}
-          >
-            <Ionicons name="trash-outline" size={20} color="#FF3B30" />
-          </TouchableOpacity>
+          <View style={styles.itemActions}>
+            {onCustomSplit && item.assignedTo.length > 0 && (
+              <TouchableOpacity
+                onPress={() => onCustomSplit(item)}
+                style={styles.customSplitButton}
+              >
+                <Ionicons name="calculator-outline" size={18} color="#007AFF" />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              onPress={() => onRemoveItem(item.id)}
+              style={styles.removeButton}
+            >
+              <Ionicons name="trash-outline" size={20} color="#FF3B30" />
+            </TouchableOpacity>
+          </View>
         </View>
         
         <View style={styles.assignedPeople}>
@@ -135,13 +151,33 @@ const ItemsManager: React.FC<ItemsManagerProps> = ({
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.sectionTitle}>Items & Expenses</Text>
-        <TouchableOpacity
-          onPress={() => setIsAddingItem(true)}
-          style={styles.addItemButton}
-        >
-          <Ionicons name="add" size={24} color="#FFFFFF" />
-          <Text style={styles.addItemButtonText}>Add Item</Text>
-        </TouchableOpacity>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity
+            onPress={() => setIsAddingItem(true)}
+            style={styles.addItemButton}
+          >
+            <Ionicons name="add" size={20} color="#FFFFFF" />
+            <Text style={styles.addItemButtonText}>Add Item</Text>
+          </TouchableOpacity>
+          
+          {onVoiceInput && (
+            <TouchableOpacity
+              onPress={onVoiceInput}
+              style={[styles.smartButton, { backgroundColor: '#FF9500' }]}
+            >
+              <Ionicons name="mic" size={18} color="#FFFFFF" />
+            </TouchableOpacity>
+          )}
+          
+          {onBarcodeScanner && (
+            <TouchableOpacity
+              onPress={onBarcodeScanner}
+              style={[styles.smartButton, { backgroundColor: '#34C759' }]}
+            >
+              <Ionicons name="barcode" size={18} color="#FFFFFF" />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {items.length > 0 ? (
@@ -470,6 +506,28 @@ const styles = StyleSheet.create({
   currencySelector: {
     flex: 1,
     marginBottom: 0,
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  smartButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  itemActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  customSplitButton: {
+    padding: 6,
+    borderRadius: 6,
+    backgroundColor: '#F0F8FF',
   },
 });
 

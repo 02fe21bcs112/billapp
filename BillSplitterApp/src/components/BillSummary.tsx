@@ -19,12 +19,14 @@ interface BillSummaryProps {
   bill: Bill;
   onUpdateBillDetails: (updates: Partial<Pick<Bill, 'tax' | 'tip' | 'name' | 'baseCurrency' | 'taxCurrency' | 'tipCurrency'>>) => void;
   onReset: () => void;
+  onCaptureReceipt?: () => void;
 }
 
 const BillSummary: React.FC<BillSummaryProps> = ({
   bill,
   onUpdateBillDetails,
   onReset,
+  onCaptureReceipt,
 }) => {
   const [taxInput, setTaxInput] = useState(bill.tax?.toString() || '0');
   const [tipInput, setTipInput] = useState(bill.tip?.toString() || '0');
@@ -225,10 +227,18 @@ const BillSummary: React.FC<BillSummaryProps> = ({
 
       <View style={styles.summaryHeader}>
         <Text style={styles.summaryTitle}>Individual Amounts</Text>
-        <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
-          <Ionicons name="share-outline" size={20} color="#007AFF" />
-          <Text style={styles.shareButtonText}>Share</Text>
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          {onCaptureReceipt && (
+            <TouchableOpacity onPress={onCaptureReceipt} style={styles.actionButton}>
+              <Ionicons name="camera-outline" size={20} color="#007AFF" />
+              <Text style={styles.actionButtonText}>Receipt</Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity onPress={handleShare} style={styles.actionButton}>
+            <Ionicons name="share-outline" size={20} color="#007AFF" />
+            <Text style={styles.actionButtonText}>Share</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <FlatList
@@ -462,6 +472,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#8E8E93',
     fontStyle: 'italic',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#F0F8FF',
+    borderRadius: 20,
+    gap: 6,
+  },
+  actionButtonText: {
+    fontSize: 14,
+    color: '#007AFF',
+    fontWeight: '500',
   },
 });
 

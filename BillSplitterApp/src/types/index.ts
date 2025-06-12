@@ -20,6 +20,8 @@ export interface Item {
   assignedTo: string[]; // Array of person IDs
   splitType: 'equal' | 'custom';
   customSplits?: { [personId: string]: number }; // Custom amounts for each person
+  category?: string; // Auto-detected or manual category
+  barcode?: string; // Barcode data if scanned
 }
 
 export interface Bill {
@@ -32,7 +34,12 @@ export interface Bill {
   taxCurrency?: string;
   tip?: number;
   tipCurrency?: string;
+  receiptImage?: string; // URI to receipt photo
+  location?: string; // Restaurant/store name
+  notes?: string; // Additional notes
+  tags?: string[]; // Custom tags for categorization
   createdAt: Date;
+  updatedAt?: Date;
 }
 
 export interface PersonSummary {
@@ -45,4 +52,23 @@ export interface PersonSummary {
     currency?: string;
     convertedAmount?: number;
   }[];
+}
+
+export interface BillTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  people: Person[];
+  items: Omit<Item, 'id' | 'assignedTo' | 'customSplits'>[];
+  defaultLocation?: string;
+  tags?: string[];
+  createdAt: Date;
+  usageCount: number;
+}
+
+export interface NotificationSettings {
+  enablePushNotifications: boolean;
+  billReminders: boolean;
+  splitUpdates: boolean;
+  paymentReminders: boolean;
 }
